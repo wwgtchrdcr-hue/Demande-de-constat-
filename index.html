@@ -508,6 +508,36 @@ table.val td.k{width:26%;background:#f3edf5;font-weight:700;color:var(--amarante
 .sdmsg:empty{display:none}
 #annStampDlg label.sdopt{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:12px;color:#5a4a55;font-weight:600;margin:0 14px 0 0}
 #annStampDlg .prev img{max-height:120px}
+
+/* ===== Affichage téléphone (version GitHub Pages, 04/10/2026) — écran uniquement, l'impression / PDF n'est pas touchée ===== */
+@media screen and (max-width:700px){
+  html,body{overflow-x:clip;max-width:100%}
+  /* en-tête : marque sur une ligne, 3 boutons sur la ligne du dessous */
+  .topbar-in{flex-wrap:wrap;gap:6px 8px;padding:6px 10px 8px}
+  .topbar-in>svg{width:30px;height:30px}
+  .tb-brand{flex:1 1 calc(100% - 46px);min-width:0}
+  .tb-brand b{font-size:13.5px}
+  .tb-brand small{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tb-sp{display:none}
+  .topbar-in>.btn{flex:1 1 0;min-width:0;justify-content:center;padding:7px 4px}
+  /* contenu : plus rien ne dépasse à droite */
+  .wrap-app{padding:10px 10px 30px}
+  .wrap{grid-template-columns:minmax(0,1fr)}
+  .wrap>*,.row2>*,.row3>*,.g3>*{min-width:0}
+  .row2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .row3{grid-template-columns:minmax(0,1fr)}
+  .editor{position:static}
+  input[type=date]{-webkit-appearance:none;appearance:none;min-width:0;max-width:100%;min-height:40px;text-align:left}
+  input[type=date]::-webkit-date-and-time-value{text-align:left}
+  .inp,textarea.inp,select.inp,.in{font-size:16px}   /* 16 px : l'iPhone ne zoome plus tout seul à la saisie */
+  /* aperçu du document */
+  .doc{padding:5mm}
+  .doc-head{gap:10px}
+  .doc-head .t{min-width:0}
+  .doc-head .t .big{font-size:1.2em;letter-spacing:0}
+  .doc-logo{height:auto;max-height:28px;max-width:45%}
+  .actionbar{padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
+}
 </style>
 </head>
 <body>
