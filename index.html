@@ -16,7 +16,7 @@ window.epcCollerTexte=function(e){
 };
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="epc-build" content="v15-mobile-2_07-10-2026">
+<meta name="epc-build" content="v15-mobile-3_07-10-2026">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Constat">
@@ -646,6 +646,11 @@ body.anntouch #atPanel .atmore button.sel{background:#E92184;color:#fff}
 #atPanel .pn[data-p="text"] .pt{display:none}
 #atPanel .pn[data-p="text"] .chip{min-width:0 !important;padding:6px 1px;font-size:12.5px}
 #atPanel .pn[data-p="text"] .chip.step{flex:0 0 46px;font-size:17px}
+#atPoly{left:10px;right:10px;justify-content:flex-end}
+#atPoly .bk{background:#241820;color:#fff;margin-right:auto}
+#atPoly .ko{padding:0 15px}
+#atPoly .ok:disabled{opacity:.45}
+body.anntouch #atMoreB span{font-size:9px;letter-spacing:-.2px}
 </style>
 </head>
 <body>
@@ -654,7 +659,7 @@ body.anntouch #atPanel .atmore button.sel{background:#E92184;color:#fff}
   <div class="ruban"></div>
   <div class="topbar-in">
     <svg width="40" height="40" viewBox="0 0 64 64" style="flex:0 0 auto" aria-label="Logo BB" role="img"><rect x="2.5" y="2.5" width="59" height="59" rx="14" fill="#ffffff" stroke="#6C1D45" stroke-width="3"/><text x="32" y="31" font-family="Montserrat,Arial,sans-serif" font-size="26" font-weight="800" fill="#6C1D45" text-anchor="middle" letter-spacing="-1.5">BB</text><rect x="13.5" y="43" width="11" height="8" rx="2.5" fill="#00C79A"/><rect x="26.5" y="43" width="11" height="8" rx="2.5" fill="#E92184"/><rect x="39.5" y="43" width="11" height="8" rx="2.5" fill="#6C1D45"/></svg>
-    <div class="tb-brand"><b>BB EPC Demosten</b><small>Demandes de constat — par chantier &middot; <b style="color:var(--vert)">v15 &middot; mobile v2 &middot; 07/10/2026</b></small></div>
+    <div class="tb-brand"><b>BB EPC Demosten</b><small>Demandes de constat — par chantier &middot; <b style="color:var(--vert)">v15 &middot; mobile v3 &middot; 07/10/2026</b></small></div>
     <div class="tb-sp"></div>
     <button class="btn sm" id="btnHome">🏠 Accueil</button>
     <button class="btn sm" id="btnRecap">📋 Récap</button>
@@ -3096,7 +3101,7 @@ box.insertBefore(top,box.firstChild);
 /* ---------- zone de dessin + éléments flottants ---------- */
 const stage=el("div",{id:"atStage"}); box.insertBefore(stage,cbox); stage.appendChild(cbox); stage.appendChild(ctxBar);
 const toastEl=el("div",{id:"atToast"}); stage.appendChild(toastEl);
-const polyUi=el("div",{id:"atPoly",hidden:""},'<button type="button" class="ko">✕ Annuler</button><button type="button" class="ok">✔ Terminer le tracé</button>'); stage.appendChild(polyUi);
+const polyUi=el("div",{id:"atPoly",hidden:""},'<button type="button" class="bk">↶ Point</button><button type="button" class="ko">✕</button><button type="button" class="ok">✔ Fermer</button>'); stage.appendChild(polyUi);
 const zoomUi=el("button",{id:"atZoom",type:"button",hidden:""}); stage.appendChild(zoomUi);
 const palUi=el("button",{id:"atPal",type:"button",hidden:""},"📌 Changer de tampon"); stage.appendChild(palUi);
 const loupe=el("canvas",{id:"atLoupe",width:"248",height:"248",hidden:""}); stage.appendChild(loupe); const lctx=loupe.getContext("2d");
@@ -3158,7 +3163,7 @@ panel.addEventListener("click",e=>{
 let tT=0; const seen={};
 function tip(t,ms){ if(!t) return; toastEl.textContent=t; toastEl.classList.add("on"); clearTimeout(tT); tT=setTimeout(()=>toastEl.classList.remove("on"),ms||2600); }
 const TIPS={select:"Touchez un objet pour le prendre · double-tap dans le vide = zoom",pen:"Dessinez au doigt · 2 doigts : zoom · tap à 2 doigts : annuler",
-  poly:"Touchez chaque sommet, puis « Terminer le tracé »",pline:"Touchez chaque point, puis « Terminer le tracé »",arrow:"Glissez du départ vers la pointe",line:"Glissez pour tracer la ligne",
+  poly:"Posez le doigt, glissez pour viser, relâchez = point posé · revenez sur le rond vert pour fermer",pline:"Posez le doigt, glissez pour viser, relâchez = point posé · puis « Terminer »",arrow:"Glissez du départ vers la pointe",line:"Glissez pour tracer la ligne",
   rect:"Glissez d'un coin à l'autre",ellipse:"Glissez pour tracer le cercle",bubble:"Touchez ce que la bulle désigne, glissez, relâchez",
   measure:"Glissez entre les deux points à coter",text:"Touchez l'endroit où écrire",stamp:"Choisissez un tampon, puis touchez la photo"};
 
@@ -3207,7 +3212,8 @@ function syncUi(){
   panel.querySelectorAll("[data-tsz]").forEach(c=>c.classList.toggle("on",+c.dataset.tsz===+textSize));
   panel.querySelectorAll("[data-f]").forEach(c=>c.classList.toggle("on",c.dataset.f===(fillOn||"")));
   if(!V) return;
-  polyUi.hidden=!((tool==="poly"||tool==="pline")&&polyDraft&&polyDraft.points.length>=2);
+  const isP=(tool==="poly"||tool==="pline"), np=(isP&&polyDraft)?polyDraft.points.length:0;
+  polyUi.hidden=!np; const okB=polyUi.querySelector(".ok"); okB.textContent=tool==="poly"?"✔ Fermer le polygone":"✔ Terminer"; okB.disabled=np<(tool==="poly"?3:2);
   const w=box.querySelector(":scope > .annwarn"); if(w) w.style.display=(tool==="measure"||calibrating)?"":"none";
   palUi.hidden=!(tool==="stamp"&&document.body.classList.contains("stcollapsed"));
   const txt=one&&T_OK.includes(one.type), eb=ctxBar.querySelector('[data-c="edit"]');
@@ -3224,6 +3230,33 @@ const _setTool=setTool; setTool=function(t){ document.body.classList.remove("stc
   seen[t]=(seen[t]||0)+1; if(seen[t]<=2&&V) tip(TIPS[t]); syncUi(); if(V) requestAnimationFrame(()=>fitFocus()); };
 polyUi.querySelector(".ok").onclick=()=>{ if(polyDraft) closePolygon(); syncUi(); };
 polyUi.querySelector(".ko").onclick=()=>{ polyDraft=null; polyHover=null; redraw(); };
+polyUi.querySelector(".bk").onclick=()=>{ if(!polyDraft) return; polyDraft.points.pop(); if(!polyDraft.points.length) polyDraft=null; polyHover=null; redraw(); };
+
+/* ---------- polygone / polyligne au doigt ----------
+   Le point se pose AU RELÂCHER : doigt posé = aperçu + loupe, on glisse pour ajuster, on relâche pour valider.
+   Revenir sur le 1er point (anneau vert) l'aimante et ferme le polygone. Repères dessinés à taille constante à l'écran. */
+let pp=null;                                   // point en cours de pose {x,y,snap}
+const SNAP=30;                                 // rayon d'aimantation du 1er point, en pixels écran
+drawPolyDraft=function(c,pd){
+  const k=kFactor(), P=pd.points, h=polyHover, canClose=!pd.open&&P.length>=3;
+  c.save(); c.lineCap="round"; c.lineJoin="round";
+  if(P.length){
+    c.strokeStyle=pd.color; c.lineWidth=Math.max(pd.width,2.5*k); c.beginPath(); P.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y)); c.stroke();
+    if(h){ const l=P[P.length-1]; c.setLineDash([9*k,6*k]); c.beginPath(); c.moveTo(l.x,l.y); c.lineTo(h.x,h.y); c.stroke();
+      if(canClose&&!(pp&&pp.snap)){ c.globalAlpha=.4; c.beginPath(); c.moveTo(h.x,h.y); c.lineTo(P[0].x,P[0].y); c.stroke(); c.globalAlpha=1; }
+      c.setLineDash([]); }
+    if(pp&&pp.snap&&pd.fill!==undefined){ c.globalAlpha=.18; c.fillStyle=pd.color; c.beginPath(); P.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y)); c.closePath(); c.fill(); c.globalAlpha=1; }
+  }
+  P.forEach((p,i)=>{ if(!i) return; c.beginPath(); c.arc(p.x,p.y,6.5*k,0,7); c.fillStyle="#fff"; c.fill(); c.lineWidth=3*k; c.strokeStyle="#241820"; c.stroke(); });
+  if(P.length){ const f=P[0], on=pp&&pp.snap;                                   // 1er point : cible de fermeture
+    if(canClose){ c.beginPath(); c.arc(f.x,f.y,(on?20:15)*k,0,7); c.fillStyle=on?"rgba(0,199,154,.45)":"rgba(0,199,154,.2)"; c.fill(); c.lineWidth=2.5*k; c.strokeStyle="#00C79A"; c.stroke(); }
+    c.beginPath(); c.arc(f.x,f.y,8*k,0,7); c.fillStyle=canClose?"#00C79A":"#fff"; c.fill(); c.lineWidth=3*k; c.strokeStyle="#241820"; c.stroke(); }
+  if(h&&!(pp&&pp.snap)){ c.beginPath(); c.arc(h.x,h.y,7*k,0,7); c.fillStyle="#E92184"; c.fill(); c.lineWidth=3*k; c.strokeStyle="#fff"; c.stroke(); }   // point en cours de pose
+  c.restore();
+};
+function ppAt(e){ const p=toImg(e); let snap=false;
+  if(tool==="poly"&&polyDraft&&polyDraft.points.length>=3){ const f=polyDraft.points[0]; if(dist(p.x,p.y,f.x,f.y)<SNAP*p.k){ p.x=f.x; p.y=f.y; snap=true; } }
+  return {x:p.x,y:p.y,snap:snap}; }
 ctxBar.addEventListener("click",e=>{ const b=e.target.closest("button[data-c]"); if(!b||SEL.length!==1) return; const a=SEL[0], c=b.dataset.c;
   if(c==="tsm") stepText(-1); else if(c==="tsp") stepText(1);
   else if(c==="edit") epcAskText("Modifier le texte :",a.text||"").then(t=>{ if(t===null) return; if(a.type==="text") t=t.replace(/\s*\n\s*/g," "); snapshot(); a.text=t; if(a.type==="bubble") fitBubble(a,true); redraw(); }); });
@@ -3253,7 +3286,7 @@ function abortStroke(){
   drawing=false; temp=null; marquee=null; dragStart=null; grab=false; resizing=null; rotating=null; tipDrag=null;
   if(pre&&performance.now()-pre.t<600){
     if(V.annots.length>pre.n){ V.annots.length=pre.n; if(V.hist.length>pre.h) V.hist.length=pre.h; SEL=[]; }
-    if(polyDraft){ if(pre.pd<0) polyDraft=null; else if(polyDraft.points.length>pre.pd){ polyDraft.points.length=pre.pd; if(!pre.pd) polyDraft=null; } }
+    if(polyDraft&&!polyDraft.points.length) polyDraft=null;
   }
   redraw();
 }
@@ -3263,13 +3296,18 @@ cbox.addEventListener("pointerdown",e=>{
   if(e.pointerType!=="touch"||e.target!==cv) return;
   if(pts.size===0){ pre={n:V?V.annots.length:0,h:V?V.hist.length:0,pd:polyDraft?polyDraft.points.length:-1,t:performance.now()}; tap={x:e.clientX,y:e.clientY,t:performance.now(),moved:false}; }
   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pts.size===2&&!gest){ gest=true; tap=null; lp=null; abortStroke(); const t=two(), r=cv.getBoundingClientRect(); g={d:t.d,z:ZT,fx:(t.mx-r.left)/r.width,fy:(t.my-r.top)/r.height,t0:performance.now(),mx:t.mx,my:t.my,mv:0,n:2}; }
+  if(pts.size===1&&(tool==="poly"||tool==="pline")&&V&&!calibrating){          // pose d'un point : on prend la main sur le code d'origine
+    if(!polyDraft){ const k=kFactor(); polyDraft=(tool==="pline")?{type:"polygon",points:[],closed:false,open:true,color:color,width:Math.round(strokeW*k),alpha:opacity}:{type:"polygon",points:[],closed:false,color:color,width:Math.round(strokeW*k),alpha:opacity,fill:fillOn||false}; SEL=[]; }
+    pp=ppAt(e); polyHover={x:pp.x,y:pp.y}; lp={x:e.clientX,y:e.clientY}; try{ cv.setPointerCapture(e.pointerId); }catch(er){}
+    e.stopPropagation(); e.preventDefault(); redraw(); return; }
+  if(pts.size===2&&!gest){ gest=true; tap=null; lp=null; pp=null; polyHover=null; abortStroke(); const t=two(), r=cv.getBoundingClientRect(); g={d:t.d,z:ZT,fx:(t.mx-r.left)/r.width,fy:(t.my-r.top)/r.height,t0:performance.now(),mx:t.mx,my:t.my,mv:0,n:2}; }
   if(gest){ if(g) g.n=Math.max(g.n,pts.size); e.stopPropagation(); e.preventDefault(); }
 },true);
 cbox.addEventListener("pointermove",e=>{
   if(e.pointerType!=="touch"||!pts.has(e.pointerId)) return;
   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(tap&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>14) tap.moved=true;
+  if(!gest&&pp){ const was=pp.snap; pp=ppAt(e); polyHover={x:pp.x,y:pp.y}; lp={x:e.clientX,y:e.clientY}; if(pp.snap&&!was) tip("Relâchez pour fermer le polygone",1400); e.stopPropagation(); reqDraw(); return; }
   if(!gest){ /* loupe pendant un tracé précis (pas pour le dessin libre) */
     const need=(drawing&&temp&&temp.type!=="pen")||resizing||tipDrag||rotating; lp=need?{x:e.clientX,y:e.clientY}:null; if(!need&&!loupe.hidden) loupe.hidden=true; return; }
   e.stopPropagation();
@@ -3284,6 +3322,10 @@ function endPtr(e){
       if(g&&g.mv<=10&&performance.now()-g.t0<320){ if(g.n>=3){ byId("annRedoB").click(); tip("↷ Rétabli",900); } else { byId("annUndoB").click(); tip("↶ Annulé",900); } }
       g=null; redraw(); }
     return; }
+  if(pp){ const q=pp; pp=null; polyHover=null; e.stopPropagation();
+    if(e.type==="pointerup"&&polyDraft){ if(q.snap){ closePolygon(); ripple(e.clientX,e.clientY); tip("Polygone fermé ✔",1200); } else { const l=polyDraft.points[polyDraft.points.length-1]; if(!l||dist(l.x,l.y,q.x,q.y)>4*kFactor()) polyDraft.points.push({x:q.x,y:q.y}); ripple(e.clientX,e.clientY); } }
+    else if(polyDraft&&!polyDraft.points.length) polyDraft=null;
+    tap=null; redraw(); return; }
   const n0=pre?pre.n:-1, cx=e.clientX, cy=e.clientY;
   setTimeout(()=>{ if(!V) return; if(n0>=0&&V.annots.length===n0+1){ try{ polish(V.annots[n0]); }catch(er){} ripple(cx,cy); redraw(); } },0);
   if(e.type==="pointerup"&&tap&&!tap.moved&&performance.now()-tap.t<350){
