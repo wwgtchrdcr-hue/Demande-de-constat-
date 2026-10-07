@@ -16,6 +16,7 @@ window.epcCollerTexte=function(e){
 };
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="epc-build" content="v15-mobile-2_07-10-2026">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Constat">
@@ -549,64 +550,102 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #pdfOv .spin{width:38px;height:38px;border-radius:50%;border:4px solid #f0dfe8;border-top-color:#E92184;margin:4px auto 14px;animation:pdfspin .8s linear infinite}
 @keyframes pdfspin{to{transform:rotate(360deg)}}
 
-/* ---------- annotateur tactile (uniquement sur écran tactile : la version souris/PC n'est pas modifiée) ---------- */
+/* ---------- annotateur tactile v2 (uniquement sur écran tactile : la version souris/PC n'est pas modifiée) ---------- */
+#epcUpd{position:fixed;left:10px;right:10px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:120;background:#241820;color:#fff;border-radius:16px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#epcUpd span{flex:1}
+#epcUpd button{border:0;border-radius:11px;min-height:42px;padding:0 14px;font:700 14px inherit;font-family:inherit;background:#00C79A;color:#06382c}
+#epcUpd button.x{background:transparent;color:#cbb9c4;padding:0 8px}
 body.anntouch.annopen{overflow:hidden}
 body.anntouch .annbg{padding:0;background:#1d1219}
-body.anntouch .annbox{max-width:none;width:100%;height:100vh;height:100dvh;max-height:none;border-radius:0;padding:0;display:flex;flex-direction:column;overflow:hidden;background:#1d1219;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body.anntouch .annbox{max-width:none;width:100%;height:100vh;height:100dvh;max-height:none;border-radius:0;padding:0;display:flex;flex-direction:column;overflow:hidden;background:#1d1219;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 body.anntouch .annbox>h3,body.anntouch .annbox>.annkeys,body.anntouch .annbox>.annhint,body.anntouch .annbox>div[style*="text-align:right"]{display:none !important}
-body.anntouch #atTop{order:0;display:flex;align-items:center;gap:6px;padding:calc(6px + env(safe-area-inset-top,0px)) 10px 6px;background:#6C1D45;color:#fff}
+body.anntouch .annbox button{touch-action:manipulation}
+/* haut */
+body.anntouch #atTop{order:0;display:flex;align-items:center;gap:6px;padding:calc(6px + env(safe-area-inset-top,0px)) 10px 6px;background:#6C1D45;color:#fff;flex:0 0 auto}
 body.anntouch #atTop #annTitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:#f3dfe9 !important;font-weight:600}
 body.anntouch #atTop button{flex:0 0 auto;min-width:44px;height:44px;border:0;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;font-size:19px;font-weight:700;font-family:inherit;padding:0 10px;transition:transform .12s}
-body.anntouch #atTop button:active{transform:scale(.9)}
+body.anntouch #atTop button:active{transform:scale(.88)}
 body.anntouch #atTop #atDone{background:#00C79A;color:#06382c;padding:0 14px;font-size:15px}
-body.anntouch .annbox>.annwarn{order:1;margin:0;border-radius:0;border:0;font-size:11px}
-body.anntouch #atStage{order:2;flex:1 1 0;min-height:0;position:relative}
+body.anntouch .annbox>.annwarn{order:1;margin:0;border-radius:0;border:0;font-size:11px;flex:0 0 auto}
+/* zone de dessin */
+body.anntouch #atStage{order:2;flex:1 1 0;min-height:0;position:relative;overflow:hidden}
 body.anntouch .canvasbox{height:100%;max-height:none !important;display:block;overflow:auto;padding:4px;border:0;border-radius:0;background:#2a1c25;overscroll-behavior:contain;scrollbar-width:none}
-body.anntouch .canvasbox::-webkit-scrollbar{display:none}
+body.anntouch .canvasbox::-webkit-scrollbar,body.anntouch .annctx::-webkit-scrollbar{display:none}
 body.anntouch #annCv{display:block;margin:0 auto;max-width:none !important;max-height:none !important}
-body.anntouch #annStampsBar{order:3;margin:0;border:0;border-radius:16px 16px 0 0;max-height:40vh;overflow:auto;flex:0 0 auto}
+/* barre d'actions de l'objet sélectionné */
+body.anntouch .annctx{position:absolute !important;left:8px !important;right:8px;top:auto !important;bottom:8px;overflow-x:auto;padding:5px 6px;gap:4px;border-radius:16px;scrollbar-width:none;justify-content:safe center;animation:atrise .18s}
+body.anntouch .annctx.top{top:8px !important;bottom:auto}
+body.anntouch .annctx .cdot,body.anntouch .annctx .csep,body.anntouch .annctx .clbl,body.anntouch .annctx input[type=range]{display:none}
+body.anntouch .annctx button{flex:0 0 auto;min-width:44px;min-height:44px;font-size:17px;border-radius:11px;padding:0 9px}
+body.anntouch .annctx button[data-c="edit"]{background:#E92184;font-size:14px;padding:0 12px}
+body.anntouch .annctx button[data-c="del"]{background:rgba(228,3,46,.35)}
+body.anntouch .annctx button:active{background:rgba(255,255,255,.3);transform:scale(.92)}
+@keyframes atrise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* palette de tampons */
+body.anntouch #annStampsBar{order:3;margin:0;border:0;border-radius:16px 16px 0 0;max-height:42vh;overflow:auto;flex:0 0 auto}
 body.anntouch.stcollapsed #annStampsBar{display:none !important}
 body.anntouch #annStampsBar .stq{font-size:16px;padding:9px 11px}
 body.anntouch .sttab{padding:8px 13px;font-size:13px}
-body.anntouch .stlist{max-height:none;grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}
+body.anntouch .stlist{max-height:none;grid-template-columns:repeat(6,1fr)}
 body.anntouch #annCaptureStamp,body.anntouch .anntools .tsep,body.anntouch #annFocusB{display:none !important}
-body.anntouch #atOpts{order:4;display:flex;align-items:center;gap:10px;padding:7px 10px;background:#fff;border-top:1px solid #e4dbe0;overflow-x:auto;scrollbar-width:none;flex:0 0 auto}
-body.anntouch #atOpts::-webkit-scrollbar,body.anntouch .anntools::-webkit-scrollbar,body.anntouch .annctx::-webkit-scrollbar{display:none}
-body.anntouch #atOpts>*{flex:0 0 auto}
-body.anntouch #annColors{max-width:none !important;flex-wrap:nowrap !important;gap:8px !important;padding:3px}
-body.anntouch #annColors .sw{width:30px;height:30px}
-body.anntouch #annColors .sw.on{box-shadow:0 0 0 3px #E92184;transform:scale(1.1)}
-body.anntouch #annColors .swp{width:32px;height:32px}
-body.anntouch #atOpts select{height:40px;font-size:16px;border-radius:10px;padding:0 8px;background:#faf5f8;border:1px solid #e4dbe0;font-family:inherit;font-weight:600}
-body.anntouch #atOpts .annlbl{font-size:13px}
-body.anntouch #atOpts .annlbl input[type=range]{width:110px}
-body.anntouch #atOpts button{height:40px;border-radius:10px;border:1px solid #e4dbe0;background:#faf5f8;font:700 13px inherit;font-family:inherit;padding:0 12px;color:#241820}
-body.anntouch #atOpts .annscale{margin:0;font-size:11.5px;white-space:nowrap}
-body.anntouch .annbox .anntools{order:5;position:static;margin:0;border:0;border-top:1px solid #e4dbe0;border-radius:0;box-shadow:none;flex-wrap:nowrap;overflow-x:auto;gap:7px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));scrollbar-width:none;flex:0 0 auto}
-body.anntouch .anntools button{flex:0 0 auto;min-height:48px;padding:0 14px;font-size:14.5px;border-radius:14px;white-space:nowrap;transition:transform .12s,background .15s}
-body.anntouch .anntools button:active{transform:scale(.92)}
-body.anntouch .anntools button.sel{background:#E92184;border-color:#E92184;color:#fff;box-shadow:0 4px 12px rgba(233,33,132,.38);animation:atpop .22s}
-@keyframes atpop{0%{transform:scale(.88)}60%{transform:scale(1.07)}100%{transform:scale(1)}}
-body.anntouch .annctx{position:absolute !important;left:8px !important;right:8px;top:auto !important;bottom:8px;overflow-x:auto;padding:6px 8px;gap:6px;border-radius:16px;scrollbar-width:none}
-body.anntouch .annctx.top{top:8px !important;bottom:auto}
-body.anntouch .annctx button{flex:0 0 auto;min-width:44px;min-height:44px;font-size:17px;border-radius:11px}
-body.anntouch .annctx button:active{background:rgba(255,255,255,.28)}
-body.anntouch .annctx .cdot{width:30px;height:30px}
-body.anntouch .annctx input[type=range]{width:120px;flex:0 0 auto}
-body.anntouch .annctx .clbl{font-size:12px;flex:0 0 auto}
+/* panneau de réglage (s'ouvre au-dessus de la rangée de réglages) */
+body.anntouch #atPanel{position:absolute;left:0;right:0;bottom:0;z-index:10;background:#fff;border-radius:16px 16px 0 0;padding:12px 12px 10px;animation:atrise .18s;box-shadow:0 -6px 18px rgba(0,0,0,.3)}
+body.anntouch #atPanel[hidden]{display:none}
+#atPanel .pn{display:none}
+#atPanel .pn.on{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+#atPanel .pt{flex-basis:100%;font-size:11.5px;font-weight:700;color:#7a6a75;text-align:center;margin-bottom:2px}
+#atPanel .chip{flex:1 1 0;min-width:64px;min-height:54px;border:2px solid #e9dfe5;background:#fbf7f9;border-radius:14px;font:700 13px inherit;font-family:inherit;color:#241820;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:6px 4px;transition:transform .12s}
+#atPanel .chip:active{transform:scale(.93)}
+#atPanel .chip.on{border-color:#E92184;background:#fff0f8;color:#E92184}
+#atPanel .chip b{display:block;width:34px;border-radius:9px;background:currentColor}
+#atPanel .chip.step{flex:0 0 58px;min-width:58px;font-size:19px;background:#6C1D45;border-color:#6C1D45;color:#fff}
+#atPanel .chip i{display:block;width:30px;height:22px;border-radius:5px;border:3px solid #E92184;box-sizing:border-box;font-style:normal}
+body.anntouch #annColors{max-width:none !important;gap:10px !important;justify-content:center;padding:2px}
+body.anntouch #annColors .sw{width:36px;height:36px;transition:transform .12s}
+body.anntouch #annColors .sw.on{box-shadow:0 0 0 3px #E92184;transform:scale(1.12)}
+body.anntouch #annColors .swp{width:38px;height:38px}
+#atPanel .annlbl{flex:1;font-size:14px;gap:12px}
+#atPanel .annlbl input[type=range]{flex:1;width:auto;height:36px}
+#atPanel .annscale{flex-basis:100%;text-align:center;margin:2px 0 0}
+#atPanel .atmore{display:grid !important;grid-template-columns:repeat(4,1fr);gap:8px;border:0 !important;padding:0 !important;margin:0 !important;position:static !important;box-shadow:none !important;overflow:visible !important;width:100%;background:none}
+/* rangée de réglages : toujours visible, sans défilement */
+body.anntouch #atProps{order:5;flex:0 0 auto;display:flex;gap:4px;padding:6px 8px 2px;background:#fff}
+#atProps button{flex:1 1 0;min-width:0;min-height:48px;border:0;border-radius:12px;background:#f6eff3;font:700 10.5px inherit;font-family:inherit;color:#5d4f58;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px 2px;transition:transform .12s,opacity .15s}
+#atProps button:active{transform:scale(.93)}
+#atProps button.on{background:#6C1D45;color:#fff}
+#atProps button.off{opacity:.3;pointer-events:none}
+#atProps .pv{display:flex;align-items:center;justify-content:center;height:22px;font-style:normal;font-size:14px;font-weight:800;color:inherit}
+#atProps .pv.col{width:22px;border-radius:50%;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #cbbcc5}
+#atProps .pv.ln b{display:block;width:26px;border-radius:9px;background:currentColor}
+#atProps .pv.fl{width:26px;height:20px;border-radius:5px;border:3px solid currentColor;box-sizing:border-box}
+/* outils */
+body.anntouch .annbox>.anntools{order:6;position:static;margin:0;border:0;border-radius:0;box-shadow:none;flex-wrap:nowrap;overflow:visible;gap:4px;padding:4px 8px calc(6px + env(safe-area-inset-bottom,0px));flex:0 0 auto;background:#fff}
+body.anntouch .anntools button{flex:1 1 0;min-width:0;min-height:54px;padding:4px 1px;border-radius:14px;border:0;background:transparent;font-size:10px;font-weight:700;color:#5d4f58;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;white-space:nowrap;transition:transform .12s,background .15s}
+body.anntouch .anntools button i{font-style:normal;font-size:21px;line-height:1;height:22px;display:flex;align-items:center}
+body.anntouch .anntools button:active{transform:scale(.9)}
+body.anntouch .anntools button.sel{background:#E92184;color:#fff;box-shadow:0 4px 12px rgba(233,33,132,.38);animation:atpop .24s}
+body.anntouch #atPanel .atmore button{background:#f6eff3;min-height:60px;font-size:11px}
+body.anntouch #atPanel .atmore button.sel{background:#E92184;color:#fff}
+@keyframes atpop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+/* éléments flottants */
 #atToast{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(20,10,16,.88);color:#fff;font-size:13px;font-weight:600;line-height:1.3;padding:8px 14px;border-radius:18px;pointer-events:none;opacity:0;transition:opacity .25s;max-width:92%;width:max-content;text-align:center;z-index:8}
 #atToast.on{opacity:1}
-#atToast.low{top:64px}
-#atPoly{position:absolute;right:10px;bottom:70px;display:flex;gap:8px;z-index:8}
-#atPoly[hidden],#atZoom[hidden],#atPal[hidden]{display:none}
+#atToast.low{top:66px}
+#atPoly{position:absolute;right:10px;bottom:66px;display:flex;gap:8px;z-index:8}
+#atPoly[hidden],#atZoom[hidden],#atPal[hidden],#atLoupe[hidden]{display:none}
 #atPoly button,#atZoom,#atPal{min-height:46px;border:0;border-radius:23px;padding:0 16px;font:700 14.5px inherit;font-family:inherit;box-shadow:0 6px 16px rgba(0,0,0,.35)}
 #atPoly .ok{background:#00C79A;color:#06382c}
 #atPoly .ko{background:#fff;color:#6C1D45}
 #atZoom{position:absolute;right:10px;top:10px;background:#fff;color:#6C1D45;z-index:8;min-height:40px}
-#atPal{position:absolute;left:10px;bottom:70px;background:#fff;color:#6C1D45;z-index:8}
+#atPal{position:absolute;left:10px;bottom:66px;background:#fff;color:#6C1D45;z-index:8}
+#atLoupe{position:absolute;width:124px;height:124px;border-radius:50%;border:3px solid #fff;box-shadow:0 8px 22px rgba(0,0,0,.5);pointer-events:none;z-index:9;background:#fff}
+.atRip{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:3px solid #E92184;pointer-events:none;z-index:7;animation:atrip .45s ease-out forwards}
+@keyframes atrip{from{transform:scale(.4);opacity:.9}to{transform:scale(3.4);opacity:0}}
 @media (prefers-reduced-motion:reduce){body.anntouch *{animation:none !important;transition:none !important}}
-/* sur tactile, la couleur se choisit dans la rangée du bas (elle s'applique aussi à l'objet sélectionné) : pas de doublon dans la barre noire */
-body.anntouch .annctx .cdot,body.anntouch .annctx .cdot + .csep{display:none}
+#atPanel .pn[data-p="text"]{flex-wrap:nowrap;gap:5px}
+#atPanel .pn[data-p="text"] .pt{display:none}
+#atPanel .pn[data-p="text"] .chip{min-width:0 !important;padding:6px 1px;font-size:12.5px}
+#atPanel .pn[data-p="text"] .chip.step{flex:0 0 46px;font-size:17px}
 </style>
 </head>
 <body>
@@ -615,7 +654,7 @@ body.anntouch .annctx .cdot,body.anntouch .annctx .cdot + .csep{display:none}
   <div class="ruban"></div>
   <div class="topbar-in">
     <svg width="40" height="40" viewBox="0 0 64 64" style="flex:0 0 auto" aria-label="Logo BB" role="img"><rect x="2.5" y="2.5" width="59" height="59" rx="14" fill="#ffffff" stroke="#6C1D45" stroke-width="3"/><text x="32" y="31" font-family="Montserrat,Arial,sans-serif" font-size="26" font-weight="800" fill="#6C1D45" text-anchor="middle" letter-spacing="-1.5">BB</text><rect x="13.5" y="43" width="11" height="8" rx="2.5" fill="#00C79A"/><rect x="26.5" y="43" width="11" height="8" rx="2.5" fill="#E92184"/><rect x="39.5" y="43" width="11" height="8" rx="2.5" fill="#6C1D45"/></svg>
-    <div class="tb-brand"><b>BB EPC Demosten</b><small>Demandes de constat — par chantier &middot; <b style="color:var(--vert)">v15 &middot; mobile 07/10/2026</b></small></div>
+    <div class="tb-brand"><b>BB EPC Demosten</b><small>Demandes de constat — par chantier &middot; <b style="color:var(--vert)">v15 &middot; mobile v2 &middot; 07/10/2026</b></small></div>
     <div class="tb-sp"></div>
     <button class="btn sm" id="btnHome">🏠 Accueil</button>
     <button class="btn sm" id="btnRecap">📋 Récap</button>
@@ -3037,9 +3076,9 @@ document.addEventListener("keydown",e=>{
 (function(){ const K={select:"V",pen:"P",poly:"G",pline:"Y",arrow:"F",line:"L",rect:"R",ellipse:"C",bubble:"B",measure:"M",text:"T",stamp:"K"};
   QQ(".anntools button[data-tool]").forEach(b=>{ const k=K[b.dataset.tool]; if(k) b.title=(b.title?b.title+" — ":"")+"raccourci "+k; });
   Q("#annImgB").title+=" — raccourci I"; Q("#annUndoB").title+=" (Ctrl+Z)"; Q("#annRedoB").title+=" (Ctrl+Y)"; })();
-/* ===== MODULE MOBILE (07/10/2026) — partie annotateur ===== */
+/* ===== MODULE MOBILE v2 (07/10/2026) — annotateur tactile =====
+   Placé DANS le bloc de l'annotateur pour partager ses variables. Ne s'active que sur écran tactile. */
 window.__ann={drawAnnot:drawAnnot,getImg:getImg};
-/* ---------- 3. ANNOTATEUR TACTILE ---------- */
 if(window.matchMedia&&matchMedia("(pointer:coarse)").matches){ try{
 const byId=id=>document.getElementById(id);
 const el=(tag,attrs,html)=>{ const e=document.createElement(tag); if(attrs) for(const k in attrs) e.setAttribute(k,attrs[k]); if(html!=null) e.innerHTML=html; return e; };
@@ -3047,35 +3086,83 @@ const box=document.querySelector("#annBg .annbox"), tools=box.querySelector(".an
 document.body.classList.add("anntouch");
 window.ANN_TOL=24; window.ANN_HR=11;           // zone de prise et poignées plus larges pour le doigt
 
-/* barre du haut : annuler / rétablir / supprimer / terminé toujours sous le pouce */
+/* ---------- barre du haut ---------- */
 const top=el("div",{id:"atTop"});
 top.appendChild(byId("annTitle"));
 ["annUndoB","annRedoB","annDelB"].forEach(id=>top.appendChild(byId(id)));
 const done=el("button",{id:"atDone",type:"button"},"✔ Terminé"); done.onclick=()=>closeAnn(); top.appendChild(done);
 box.insertBefore(top,box.firstChild);
 
-/* zone de dessin + éléments flottants */
+/* ---------- zone de dessin + éléments flottants ---------- */
 const stage=el("div",{id:"atStage"}); box.insertBefore(stage,cbox); stage.appendChild(cbox); stage.appendChild(ctxBar);
 const toastEl=el("div",{id:"atToast"}); stage.appendChild(toastEl);
 const polyUi=el("div",{id:"atPoly",hidden:""},'<button type="button" class="ko">✕ Annuler</button><button type="button" class="ok">✔ Terminer le tracé</button>'); stage.appendChild(polyUi);
 const zoomUi=el("button",{id:"atZoom",type:"button",hidden:""}); stage.appendChild(zoomUi);
 const palUi=el("button",{id:"atPal",type:"button",hidden:""},"📌 Changer de tampon"); stage.appendChild(palUi);
+const loupe=el("canvas",{id:"atLoupe",width:"248",height:"248",hidden:""}); stage.appendChild(loupe); const lctx=loupe.getContext("2d");
 
-/* rangée d'options toujours visible : couleurs, épaisseur, texte, remplissage, opacité */
-const opts=el("div",{id:"atOpts"});
-["annColors","annWidth","annTextSize","annFill"].forEach(id=>opts.appendChild(byId(id)));
-opts.appendChild(byId("annOpacity").closest("label"));
-opts.appendChild(byId("annCalibB")); opts.appendChild(byId("annScale"));
-box.insertBefore(opts,tools);
+/* ---------- outils : 7 principaux + « Plus » ---------- */
+const TM={select:["✋","Sélect."],pen:["✏️","Libre"],arrow:["↗","Flèche"],rect:["▭","Rect."],text:["T","Texte"],bubble:["💬","Bulle"],stamp:["📌","Tampon"],
+          ellipse:["◯","Cercle"],line:["／","Ligne"],poly:["⬡","Polygone"],pline:["〰","Polyligne"],measure:["📏","Cote"]};
+const PRIMARY=["select","pen","arrow","rect","text","bubble","stamp"];
+const tbtn={}; QQ(".anntools button[data-tool]").forEach(b=>{ tbtn[b.dataset.tool]=b; const m=TM[b.dataset.tool]; if(m) b.innerHTML="<i>"+m[0]+"</i><span>"+m[1]+"</span>"; });
+const more=el("div",{"class":"anntools atmore"});
+Object.keys(TM).filter(k=>!PRIMARY.includes(k)).forEach(k=>{ if(tbtn[k]) more.appendChild(tbtn[k]); });
+byId("annImgB").innerHTML="<i>🖼</i><span>Image</span>"; more.appendChild(byId("annImgB"));
+byId("annCalibB").innerHTML="<i>📐</i><span>Calibrer</span>"; more.appendChild(byId("annCalibB"));
+PRIMARY.forEach(k=>{ if(tbtn[k]) tools.appendChild(tbtn[k]); });
+const moreB=el("button",{id:"atMoreB",type:"button"},"<i>⋯</i><span>Plus</span>"); tools.appendChild(moreB);
 
-let tT=0;
-function tip(t,ms){ if(!t) return; toastEl.textContent=t; toastEl.classList.add("on"); clearTimeout(tT); tT=setTimeout(()=>toastEl.classList.remove("on"),ms||3200); }
-const TIPS={select:"Touchez un objet pour le prendre · glissez dans le vide pour en entourer plusieurs",pen:"Dessinez au doigt · 2 doigts pour zoomer et déplacer la photo",
-  poly:"Touchez chaque sommet, puis « Terminer le tracé »",pline:"Touchez chaque point, puis « Terminer le tracé »",arrow:"Glissez du départ vers la pointe de la flèche",line:"Glissez pour tracer la ligne",
-  rect:"Glissez d'un coin à l'autre",ellipse:"Glissez pour tracer le cercle",bubble:"Touchez ce que la bulle désigne, glissez jusqu'où la poser, relâchez",
-  measure:"Glissez entre les deux points à coter",text:"Touchez l'endroit où écrire",stamp:"Choisissez un tampon, puis touchez la photo pour le poser"};
+/* ---------- réglages : 5 boutons toujours visibles, chacun ouvre un panneau de gros choix ---------- */
+const props=el("div",{id:"atProps"},
+  '<button type="button" data-p="color"><i class="pv col"></i><span>Couleur</span></button>'+
+  '<button type="button" data-p="width"><i class="pv ln"><b></b></i><span>Trait</span></button>'+
+  '<button type="button" data-p="text"><i class="pv aa">Aa</i><span>Taille texte</span></button>'+
+  '<button type="button" data-p="fill"><i class="pv fl"></i><span>Fond</span></button>'+
+  '<button type="button" data-p="op"><i class="pv opv">100</i><span>Opacité</span></button>');
+box.insertBefore(props,tools);
+const panel=el("div",{id:"atPanel",hidden:""},
+  '<div class="pn" data-p="color"><div class="pt">Couleur — s\'applique aussi à l\'objet sélectionné</div></div>'+
+  '<div class="pn" data-p="width"><div class="pt">Épaisseur du trait</div>'+[[2,"Fin"],[4,"Moyen"],[6,"Épais"],[9,"Très épais"]].map(w=>'<button type="button" class="chip" data-w="'+w[0]+'"><b style="height:'+w[0]+'px"></b>'+w[1]+'</button>').join("")+'</div>'+
+  '<div class="pn" data-p="text"><div class="pt">Taille du texte (textes et bulles)</div><button type="button" class="chip step" data-ts="-1">A−</button>'+[[14,"XS"],[20,"S"],[30,"M"],[44,"L"],[60,"XL"],[80,"XXL"]].map(s=>'<button type="button" class="chip" style="min-width:40px" data-tsz="'+s[0]+'">'+s[1]+'</button>').join("")+'<button type="button" class="chip step" data-ts="1">A+</button></div>'+
+  '<div class="pn" data-p="fill"><div class="pt">Remplissage des formes fermées</div>'+[["","Aucun","transparent"],["t","Léger","rgba(233,33,132,.25)"],["o","Plein","#E92184"],["b","Masque blanc","#fff"]].map(f=>'<button type="button" class="chip" data-f="'+f[0]+'"><i style="background:'+f[2]+'"></i>'+f[1]+'</button>').join("")+'</div>'+
+  '<div class="pn" data-p="op"><div class="pt">Opacité</div></div>'+
+  '<div class="pn" data-p="more"><div class="pt">Autres outils</div></div>');
+stage.appendChild(panel);   // le panneau recouvre le bas de la photo : rien ne bouge sous le doigt
+const pn=k=>panel.querySelector('.pn[data-p="'+k+'"]');
+pn("color").appendChild(byId("annColors"));
+pn("op").appendChild(byId("annOpacity").closest("label"));
+pn("more").appendChild(more); pn("more").appendChild(byId("annScale"));
+["annWidth","annTextSize","annFill"].forEach(id=>{ byId(id).style.display="none"; });
+let openP="";
+function showPanel(k){ openP=(k&&k!==openP)?k:""; panel.hidden=!openP; panel.querySelectorAll(".pn").forEach(p=>p.classList.toggle("on",p.dataset.p===openP)); syncUi(); }
+props.addEventListener("click",e=>{ const b=e.target.closest("button[data-p]"); if(b) showPanel(b.dataset.p); });
+moreB.onclick=()=>showPanel("more");
+const setSel=(id,v)=>{ const s=byId(id); s.value=v; s.onchange({target:s}); };
+function stepText(d){
+  const tb=SEL.filter(a=>a.type==="text"||a.type==="bubble");
+  if(V&&tb.length){ snapshot(); tb.forEach(a=>{ a.size=Math.max(8,Math.min(420,Math.round((a.size||30)*(d>0?1.18:1/1.18)))); if(a.type==="bubble") fitBubble(a,false); }); redraw(); }
+  else{ const s=byId("annTextSize"); s.selectedIndex=Math.max(0,Math.min(s.options.length-1,s.selectedIndex+d)); s.onchange({target:s}); syncUi(); }
+}
+panel.addEventListener("click",e=>{
+  const c=e.target.closest(".chip"); if(c){
+    if(c.dataset.w!=null){ setSel("annWidth",c.dataset.w); showPanel(""); }
+    else if(c.dataset.tsz!=null){ setSel("annTextSize",c.dataset.tsz); syncUi(); }
+    else if(c.dataset.ts!=null){ stepText(+c.dataset.ts); }
+    else if(c.dataset.f!=null){ setSel("annFill",c.dataset.f); showPanel(""); }
+    return; }
+  if(e.target.classList&&e.target.classList.contains("sw")){ setTimeout(()=>{ if(openP==="color") showPanel(""); },120); }
+});
 
-/* l'image remplit la zone ; ZT = zoom au pincement */
+/* ---------- messages courts ---------- */
+let tT=0; const seen={};
+function tip(t,ms){ if(!t) return; toastEl.textContent=t; toastEl.classList.add("on"); clearTimeout(tT); tT=setTimeout(()=>toastEl.classList.remove("on"),ms||2600); }
+const TIPS={select:"Touchez un objet pour le prendre · double-tap dans le vide = zoom",pen:"Dessinez au doigt · 2 doigts : zoom · tap à 2 doigts : annuler",
+  poly:"Touchez chaque sommet, puis « Terminer le tracé »",pline:"Touchez chaque point, puis « Terminer le tracé »",arrow:"Glissez du départ vers la pointe",line:"Glissez pour tracer la ligne",
+  rect:"Glissez d'un coin à l'autre",ellipse:"Glissez pour tracer le cercle",bubble:"Touchez ce que la bulle désigne, glissez, relâchez",
+  measure:"Glissez entre les deux points à coter",text:"Touchez l'endroit où écrire",stamp:"Choisissez un tampon, puis touchez la photo"};
+
+/* ---------- affichage : l'image remplit la zone ; ZT = zoom ---------- */
 let ZT=1;
 fitFocus=function(){
   if(!V||!cv.width) return;
@@ -3084,40 +3171,82 @@ fitFocus=function(){
   cv.style.width=Math.round(cv.width*k)+"px"; cv.style.height=h+"px"; cv.style.marginTop=Math.max(0,Math.round((bh-h)/2))+"px";
   zoomUi.hidden=ZT<1.05; if(ZT>=1.05) zoomUi.textContent="× "+ZT.toFixed(1).replace(".",",")+"  ⤢";
 };
+function zoomAt(z,cx,cy){ const r0=cv.getBoundingClientRect(), fx=(cx-r0.left)/r0.width, fy=(cy-r0.top)/r0.height; ZT=Math.max(1,Math.min(8,z)); fitFocus(); const r=cv.getBoundingClientRect(); cbox.scrollLeft+=(r.left+fx*r.width)-cx; cbox.scrollTop+=(r.top+fy*r.height)-cy; }
 zoomUi.onclick=()=>{ ZT=1; fitFocus(); redraw(); };
 if(window.ResizeObserver) new ResizeObserver(()=>{ if(V) fitFocus(); }).observe(cbox);
 
-/* état de l'interface après chaque dessin */
+/* ---------- loupe : montre ce que le doigt cache pendant un tracé précis ---------- */
+let lp=null;
+function drawLoupe(){
+  if(!lp||!V){ loupe.hidden=true; return; }
+  const r=cv.getBoundingClientRect(), s=stage.getBoundingClientRect(), k=cv.width/r.width;
+  const ix=(lp.x-r.left)*k, iy=(lp.y-r.top)*k, sw=124*k/2.2;
+  lctx.fillStyle="#2a1c25"; lctx.fillRect(0,0,248,248);
+  try{ lctx.drawImage(cv,ix-sw/2,iy-sw/2,sw,sw,0,0,248,248); }catch(e){}
+  lctx.strokeStyle="rgba(233,33,132,.95)"; lctx.lineWidth=3; lctx.beginPath(); lctx.moveTo(124,104); lctx.lineTo(124,144); lctx.moveTo(104,124); lctx.lineTo(144,124); lctx.stroke();
+  let x=lp.x-s.left-62, y=lp.y-s.top-170; if(y<6) y=lp.y-s.top+50; x=Math.max(6,Math.min(s.width-130,x));
+  loupe.style.left=x+"px"; loupe.style.top=y+"px"; loupe.hidden=false;
+}
+function ripple(cx,cy){ const s=stage.getBoundingClientRect(), d=el("div",{"class":"atRip"}); d.style.left=(cx-s.left)+"px"; d.style.top=(cy-s.top)+"px"; stage.appendChild(d); setTimeout(()=>d.remove(),500); }
+
+/* ---------- état de l'interface, recalculé après chaque dessin ---------- */
+const W_OK=["pen","polygon","poly","pline","arrow","line","rect","ellipse","bubble","measure"], F_OK=["rect","ellipse","polygon","poly"], T_OK=["text","bubble"];
 function syncUi(){
+  const types=SEL.length?SEL.map(a=>a.type):[tool], one=SEL.length===1?SEL[0]:null;
+  const rel={color:true,op:true,width:types.some(t=>W_OK.includes(t)),text:types.some(t=>T_OK.includes(t)),fill:types.some(t=>F_OK.includes(t))};
+  props.querySelectorAll("button").forEach(b=>{ const k=b.dataset.p; b.classList.toggle("off",!rel[k]); b.classList.toggle("on",openP===k); });
+  if(openP&&rel[openP]===false){ openP=""; panel.hidden=true; }
+  moreB.classList.toggle("on",openP==="more");
+  const inMore=!PRIMARY.includes(tool)&&TM[tool]; moreB.classList.toggle("sel",!!inMore); moreB.innerHTML=inMore?("<i>"+TM[tool][0]+"</i><span>"+TM[tool][1]+"</span>"):"<i>⋯</i><span>Plus</span>";
+  const col=(one&&one.color&&one.type!=="stamp")?one.color:color; props.querySelector(".pv.col").style.background=col;
+  props.querySelector(".pv.ln b").style.height=Math.max(2,Math.min(10,strokeW))+"px";
+  const ts=byId("annTextSize"); props.querySelector(".pv.aa").textContent="Aa "+(ts.options[ts.selectedIndex]?ts.options[ts.selectedIndex].text.replace("Texte ",""):"");
+  props.querySelector(".pv.fl").style.background=fillOn==="o"?"currentColor":(fillOn==="t"?"rgba(233,33,132,.3)":(fillOn==="b"?"#fff":"transparent"));
+  props.querySelector(".pv.opv").textContent=Math.round(((one&&one.alpha!=null)?one.alpha:opacity)*100)+" %";
+  panel.querySelectorAll("[data-w]").forEach(c=>c.classList.toggle("on",+c.dataset.w===+strokeW));
+  panel.querySelectorAll("[data-tsz]").forEach(c=>c.classList.toggle("on",+c.dataset.tsz===+textSize));
+  panel.querySelectorAll("[data-f]").forEach(c=>c.classList.toggle("on",c.dataset.f===(fillOn||"")));
   if(!V) return;
-  const pd=(tool==="poly"||tool==="pline")&&polyDraft&&polyDraft.points.length>=2;
-  polyUi.hidden=!pd;
+  polyUi.hidden=!((tool==="poly"||tool==="pline")&&polyDraft&&polyDraft.points.length>=2);
   const w=box.querySelector(":scope > .annwarn"); if(w) w.style.display=(tool==="measure"||calibrating)?"":"none";
   palUi.hidden=!(tool==="stamp"&&document.body.classList.contains("stcollapsed"));
-  const one=SEL.length===1&&(SEL[0].type==="text"||SEL[0].type==="bubble"), eb=ctxBar.querySelector('[data-c="edit"]');
-  if(one&&!eb&&!ctxBar.hidden){ const b=el("button",{"data-c":"edit",type:"button"},"✎ Texte"); ctxBar.insertBefore(b,ctxBar.firstChild); }
-  else if(!one&&eb) eb.remove();
+  const txt=one&&T_OK.includes(one.type), eb=ctxBar.querySelector('[data-c="edit"]');
+  if(txt&&!eb&&!ctxBar.hidden){ ["tsp","tsm","edit"].forEach(c=>{ const b=el("button",{"data-c":c,type:"button"},c==="edit"?"✎ Texte":(c==="tsm"?"A−":"A+")); ctxBar.insertBefore(b,ctxBar.firstChild); }); }
+  else if(!txt&&eb){ ctxBar.querySelectorAll('[data-c="edit"],[data-c="tsm"],[data-c="tsp"]').forEach(b=>b.remove()); }
   if(SEL.length&&!ctxBar.hidden){ let y1=Infinity,y2=-Infinity; SEL.forEach(a=>{ const b=aabb(a); y1=Math.min(y1,b.y); y2=Math.max(y2,b.y+b.h); });
     const r=cv.getBoundingClientRect(), s=stage.getBoundingClientRect(), cy=r.top+((y1+y2)/2)*(r.height/cv.height);
     ctxBar.classList.toggle("top",cy>s.top+s.height*0.58); }
   toastEl.classList.toggle("low",ctxBar.classList.contains("top")&&!ctxBar.hidden);
+  drawLoupe();
 }
 const _redraw=redraw; redraw=function(){ _redraw(); try{ syncUi(); }catch(e){} };
-const _setTool=setTool; setTool=function(t){ document.body.classList.remove("stcollapsed"); _setTool(t); byId("annPolyHint").style.display="none"; tip(TIPS[t]); syncUi(); const b=tools.querySelector('button[data-tool="'+t+'"]'); if(b&&b.scrollIntoView) b.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"}); };
+const _setTool=setTool; setTool=function(t){ document.body.classList.remove("stcollapsed"); _setTool(t); byId("annPolyHint").style.display="none"; openP=""; panel.hidden=true;
+  seen[t]=(seen[t]||0)+1; if(seen[t]<=2&&V) tip(TIPS[t]); syncUi(); if(V) requestAnimationFrame(()=>fitFocus()); };
 polyUi.querySelector(".ok").onclick=()=>{ if(polyDraft) closePolygon(); syncUi(); };
 polyUi.querySelector(".ko").onclick=()=>{ polyDraft=null; polyHover=null; redraw(); };
-ctxBar.addEventListener("click",e=>{ const b=e.target.closest('[data-c="edit"]'); if(!b||SEL.length!==1) return; const a=SEL[0];
-  epcAskText("Modifier le texte :",a.text||"").then(t=>{ if(t===null) return; if(a.type==="text") t=t.replace(/\s*\n\s*/g," "); snapshot(); a.text=t; if(a.type==="bubble") fitBubble(a,true); redraw(); }); });
+ctxBar.addEventListener("click",e=>{ const b=e.target.closest("button[data-c]"); if(!b||SEL.length!==1) return; const a=SEL[0], c=b.dataset.c;
+  if(c==="tsm") stepText(-1); else if(c==="tsp") stepText(1);
+  else if(c==="edit") epcAskText("Modifier le texte :",a.text||"").then(t=>{ if(t===null) return; if(a.type==="text") t=t.replace(/\s*\n\s*/g," "); snapshot(); a.text=t; if(a.type==="bubble") fitBubble(a,true); redraw(); }); });
 
-/* palette de tampons : elle se replie dès qu'un tampon est choisi, pour libérer la photo */
+/* palette de tampons : se replie dès qu'un tampon est choisi, pour libérer la photo */
 byId("annStampList").addEventListener("click",e=>{ if(!e.target.closest(".stbtn")||e.target.closest(".sdel")) return; document.body.classList.add("stcollapsed"); tip("Touchez la photo pour poser le tampon"); syncUi(); });
 palUi.onclick=()=>{ document.body.classList.remove("stcollapsed"); syncUi(); };
 
 /* ouverture / fermeture */
 new MutationObserver(()=>{ const open=!bg.hidden; document.body.classList.toggle("annopen",open);
-  if(open){ ZT=1; document.body.classList.remove("stcollapsed"); requestAnimationFrame(()=>{ fitFocus(); redraw(); tip(TIPS[tool],4200); }); } }).observe(bg,{attributes:true,attributeFilter:["hidden"]});
+  if(open){ ZT=1; lp=null; openP=""; panel.hidden=true; document.body.classList.remove("stcollapsed"); requestAnimationFrame(()=>{ fitFocus(); redraw(); tip(TIPS[tool],3600); }); } }).observe(bg,{attributes:true,attributeFilter:["hidden"]});
 
-/* ----- gestes : 2 doigts = zoom + déplacement ; double-tap = modifier un texte ----- */
+/* ---------- finition « pro » des tracés ---------- */
+function rdp(p,eps){ if(p.length<3) return p; let dm=0,ix=0; const a=p[0],b=p[p.length-1],dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1;
+  for(let i=1;i<p.length-1;i++){ const d=Math.abs(dy*p[i].x-dx*p[i].y+b.x*a.y-b.y*a.x)/L; if(d>dm){ dm=d; ix=i; } }
+  if(dm>eps) return rdp(p.slice(0,ix+1),eps).slice(0,-1).concat(rdp(p.slice(ix),eps)); return [a,b]; }
+function chaikin(p){ if(p.length<3) return p; const o=[p[0]]; for(let i=0;i<p.length-1;i++){ const a=p[i],b=p[i+1]; o.push({x:a.x*.75+b.x*.25,y:a.y*.75+b.y*.25},{x:a.x*.25+b.x*.75,y:a.y*.25+b.y*.75}); } o.push(p[p.length-1]); return o; }
+function polish(a){
+  if(a.type==="pen"&&a.points&&a.points.length>5){ const k=kFactor(); let p=rdp(a.points,1.3*k); p=chaikin(chaikin(p)); a.points=p.map(q=>({x:Math.round(q.x*10)/10,y:Math.round(q.y*10)/10})); }
+  else if(ENDT(a.type)){ const dx=a.x2-a.x1,dy=a.y2-a.y1,ang=Math.abs(Math.atan2(dy,dx)*180/Math.PI); if(Math.hypot(dx,dy)>40){ if(ang<4||ang>176) a.y2=a.y1; else if(Math.abs(ang-90)<4) a.x2=a.x1; } }
+}
+
+/* ---------- gestes : 2 doigts = zoom + déplacement ; tap à 2 doigts = annuler, à 3 = rétablir ; double-tap = modifier un texte ou zoomer ---------- */
 const pts=new Map(); let gest=false, g=null, pre=null, tap=null, lastTap=null, lastSynth=0;
 function abortStroke(){
   if(!V) return;
@@ -3130,36 +3259,47 @@ function abortStroke(){
 }
 function two(){ const a=[...pts.values()]; return {d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1,mx:(a[0].x+a[1].x)/2,my:(a[0].y+a[1].y)/2}; }
 cbox.addEventListener("pointerdown",e=>{
+  if(openP){ showPanel(""); e.stopPropagation(); e.preventDefault(); return; }   // toucher la photo referme le panneau, sans rien dessiner
   if(e.pointerType!=="touch"||e.target!==cv) return;
   if(pts.size===0){ pre={n:V?V.annots.length:0,h:V?V.hist.length:0,pd:polyDraft?polyDraft.points.length:-1,t:performance.now()}; tap={x:e.clientX,y:e.clientY,t:performance.now(),moved:false}; }
   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pts.size===2&&!gest){ gest=true; tap=null; abortStroke(); const t=two(), r=cv.getBoundingClientRect(); g={d:t.d,z:ZT,fx:(t.mx-r.left)/r.width,fy:(t.my-r.top)/r.height}; }
-  if(gest){ e.stopPropagation(); e.preventDefault(); }
+  if(pts.size===2&&!gest){ gest=true; tap=null; lp=null; abortStroke(); const t=two(), r=cv.getBoundingClientRect(); g={d:t.d,z:ZT,fx:(t.mx-r.left)/r.width,fy:(t.my-r.top)/r.height,t0:performance.now(),mx:t.mx,my:t.my,mv:0,n:2}; }
+  if(gest){ if(g) g.n=Math.max(g.n,pts.size); e.stopPropagation(); e.preventDefault(); }
 },true);
 cbox.addEventListener("pointermove",e=>{
   if(e.pointerType!=="touch"||!pts.has(e.pointerId)) return;
   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(tap&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>14) tap.moved=true;
-  if(!gest) return;
+  if(!gest){ /* loupe pendant un tracé précis (pas pour le dessin libre) */
+    const need=(drawing&&temp&&temp.type!=="pen")||resizing||tipDrag||rotating; lp=need?{x:e.clientX,y:e.clientY}:null; if(!need&&!loupe.hidden) loupe.hidden=true; return; }
   e.stopPropagation();
-  if(pts.size>=2&&g){ const t=two(); ZT=Math.max(1,Math.min(8,g.z*t.d/g.d)); fitFocus();
-    const r=cv.getBoundingClientRect(); cbox.scrollLeft+=(r.left+g.fx*r.width)-t.mx; cbox.scrollTop+=(r.top+g.fy*r.height)-t.my; }
+  if(pts.size>=2&&g){ const t=two(); g.mv=Math.max(g.mv,Math.abs(t.d-g.d),Math.hypot(t.mx-g.mx,t.my-g.my));
+    if(g.mv>10){ ZT=Math.max(1,Math.min(8,g.z*t.d/g.d)); fitFocus(); const r=cv.getBoundingClientRect(); cbox.scrollLeft+=(r.left+g.fx*r.width)-t.mx; cbox.scrollTop+=(r.top+g.fy*r.height)-t.my; } }
 },true);
 function endPtr(e){
   if(e.pointerType!=="touch"||!pts.has(e.pointerId)) return;
-  pts.delete(e.pointerId);
-  if(gest){ e.stopPropagation(); g=null; if(pts.size===0){ gest=false; redraw(); } return; }
+  pts.delete(e.pointerId); lp=null; loupe.hidden=true;
+  if(gest){ e.stopPropagation();
+    if(pts.size===0){ gest=false;
+      if(g&&g.mv<=10&&performance.now()-g.t0<320){ if(g.n>=3){ byId("annRedoB").click(); tip("↷ Rétabli",900); } else { byId("annUndoB").click(); tip("↶ Annulé",900); } }
+      g=null; redraw(); }
+    return; }
+  const n0=pre?pre.n:-1, cx=e.clientX, cy=e.clientY;
+  setTimeout(()=>{ if(!V) return; if(n0>=0&&V.annots.length===n0+1){ try{ polish(V.annots[n0]); }catch(er){} ripple(cx,cy); redraw(); } },0);
   if(e.type==="pointerup"&&tap&&!tap.moved&&performance.now()-tap.t<350){
     const now=performance.now();
-    if(lastTap&&now-lastTap.t<340&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<30){ lastTap=null; const x=e.clientX,y=e.clientY;
-      setTimeout(()=>{ lastSynth=performance.now(); cv.dispatchEvent(new MouseEvent("dblclick",{bubbles:true,cancelable:true,clientX:x,clientY:y})); },0); }
-    else lastTap={x:e.clientX,y:e.clientY,t:now};
+    if(lastTap&&now-lastTap.t<340&&Math.hypot(cx-lastTap.x,cy-lastTap.y)<30){ lastTap=null;
+      const p=toImg(e), hit=topHit(p.x,p.y,24*p.k);
+      if(tool==="select"&&!hit){ setTimeout(()=>{ zoomAt(ZT>1.05?1:2.5,cx,cy); redraw(); },0); }
+      else setTimeout(()=>{ lastSynth=performance.now(); cv.dispatchEvent(new MouseEvent("dblclick",{bubbles:true,cancelable:true,clientX:cx,clientY:cy})); },0); }
+    else lastTap={x:cx,y:cy,t:now};
   }
   tap=null;
 }
 cbox.addEventListener("pointerup",endPtr,true);
 cbox.addEventListener("pointercancel",endPtr,true);
 cbox.addEventListener("dblclick",e=>{ if(e.isTrusted&&performance.now()-lastSynth<700){ e.stopImmediatePropagation(); e.preventDefault(); } },true);
+syncUi();
 }catch(e){ console.warn("annotateur tactile",e); document.body.classList.remove("anntouch"); } }
 
 setTool("pen");
@@ -3311,7 +3451,7 @@ async function flattenPhotos(stage){
   }
 }
 /* découpe en pages : on ne coupe qu'entre deux blocs (jamais dans une photo ni juste après un titre) */
-function pageCuts(inner,avail){
+function pageCuts(inner,avail,onePage){
   const top0=inner.getBoundingClientRect().top, total=inner.offsetHeight;
   const tp=e=>e.getBoundingClientRect().top-top0;
   const cands=[], forced=[];
@@ -3324,6 +3464,8 @@ function pageCuts(inner,avail){
   }); };
   walk(inner);
   const cuts=[]; let start=0, guard=0;
+  /* le compteur de l'aperçu annonce « 1 page » : le PDF tient alors lui aussi sur 1 page (léger ajustement d'échelle si besoin) */
+  if(onePage){ const end=forced.length?Math.min.apply(null,forced):total; cuts.push([0,end]); start=end; }
   while(start<total-2&&guard++<60){
     const limit=start+avail; let end;
     const f=forced.filter(t=>t>start+2&&t<=limit+.5).sort((a,b)=>a-b)[0];
@@ -3350,7 +3492,8 @@ async function exportPdf(){
     const inner=realIn.cloneNode(true); inner.querySelectorAll(".pgbrk").forEach(e=>e.remove());
     d.appendChild(inner); stage.appendChild(d); document.body.appendChild(stage);
     await flattenPhotos(stage);
-    const avail=(297/z-2*mg.v)*MMPX, cuts=pageCuts(inner,avail), wpx=inner.offsetWidth;
+    const fitNow=(typeof pageFit==="function")?pageFit():null;
+    const avail=(297/z-2*mg.v)*MMPX, cuts=pageCuts(inner,avail,!!(fitNow&&fitNow.fits)), wpx=inner.offsetWidth;
     const mmpp=(210-2*mg.h*z)/wpx;                                   // mm par pixel de la copie
     const scale=Math.min(2.5,Math.sqrt(9e6/(wpx*avail)));               // net, sans dépasser la mémoire d'un téléphone
     const pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4",compress:true});
@@ -3360,7 +3503,8 @@ async function exportPdf(){
       const cvs=await window.html2canvas(inner,{scale:scale,backgroundColor:"#ffffff",logging:false,useCORS:true,x:X,y:Y+y0,width:wpx,height:hh,windowWidth:Math.max(document.documentElement.clientWidth,Math.ceil(wpx)+40),
         ignoreElements:e=>e.parentElement===document.body&&e.id!=="pdfStage"&&!/^(STYLE|LINK|SCRIPT)$/.test(e.tagName)});
       if(i) pdf.addPage();
-      pdf.addImage(cvs.toDataURL("image/jpeg",0.92),"JPEG",mg.h*z,mg.v*z,wpx*mmpp,hh*mmpp,undefined,"FAST");
+      const f=Math.min(1,avail/hh), wmm=wpx*mmpp;                      // f < 1 seulement si la page forcée dépasse de quelques mm
+      pdf.addImage(cvs.toDataURL("image/jpeg",0.92),"JPEG",mg.h*z+wmm*(1-f)/2,mg.v*z,wmm*f,hh*mmpp*f,undefined,"FAST");
       cvs.width=cvs.height=0;
     }
     const blob=pdf.output("blob"), name=pdfName();
@@ -3387,6 +3531,24 @@ function pdfReady(){
 }
 window.epcExportPdf=exportPdf;
 if(COARSE&&byId("btnPrint")){ byId("btnPrint").onclick=exportPdf; byId("btnPrint").innerHTML="📄 Créer le PDF"; }
+
+/* ---------- 2 bis. NOUVELLE VERSION EN LIGNE ? ----------
+   Une appli posée sur l'écran d'accueil garde l'ancienne page en mémoire. On compare le repère de version
+   de la page affichée avec celui du fichier en ligne, et on propose de recharger. */
+(function(){
+  const meta=document.querySelector('meta[name="epc-build"]'); if(!meta||!/^https?:/.test(location.protocol)) return;
+  const BUILD=meta.content; let last=0;
+  async function check(){
+    if(Date.now()-last<10*60*1000) return; last=Date.now();
+    try{ const r=await fetch(location.pathname+"?t="+Date.now(),{cache:"no-store",headers:{Range:"bytes=0-2047"}}); const tx=(await r.text()).slice(0,4000);
+      const m=/name="epc-build" content="([^"]+)"/.exec(tx);
+      if(m&&m[1]!==BUILD&&!byId("epcUpd")){ const b=el("div",{id:"epcUpd","class":"no-print"},'<span>Nouvelle version disponible</span><button type="button" class="go">Mettre à jour</button><button type="button" class="x">✕</button>');
+        b.querySelector(".go").onclick=()=>{ try{ if(typeof saveLocal==="function") saveLocal(); }catch(e){} location.reload(); }; b.querySelector(".x").onclick=()=>b.remove(); document.body.appendChild(b); }
+    }catch(e){}
+  }
+  setTimeout(check,2500);
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) check(); });
+})();
 })();
 </script>
 </body>
