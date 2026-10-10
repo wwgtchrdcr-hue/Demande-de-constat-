@@ -16,7 +16,7 @@ window.epcCollerTexte=function(e){
 };
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="epc-build" content="v15-mobile-3_07-10-2026">
+<meta name="epc-build" content="v15-mobile-4_10-10-2026">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Constat">
@@ -659,7 +659,7 @@ body.anntouch #atMoreB span{font-size:9px;letter-spacing:-.2px}
   <div class="ruban"></div>
   <div class="topbar-in">
     <svg width="40" height="40" viewBox="0 0 64 64" style="flex:0 0 auto" aria-label="Logo BB" role="img"><rect x="2.5" y="2.5" width="59" height="59" rx="14" fill="#ffffff" stroke="#6C1D45" stroke-width="3"/><text x="32" y="31" font-family="Montserrat,Arial,sans-serif" font-size="26" font-weight="800" fill="#6C1D45" text-anchor="middle" letter-spacing="-1.5">BB</text><rect x="13.5" y="43" width="11" height="8" rx="2.5" fill="#00C79A"/><rect x="26.5" y="43" width="11" height="8" rx="2.5" fill="#E92184"/><rect x="39.5" y="43" width="11" height="8" rx="2.5" fill="#6C1D45"/></svg>
-    <div class="tb-brand"><b>BB EPC Demosten</b><small>Demandes de constat — par chantier &middot; <b style="color:var(--vert)">v15 &middot; mobile v3 &middot; 07/10/2026</b></small></div>
+    <div class="tb-brand"><b>BB EPC Demosten</b><small>Demandes de constat — par chantier &middot; <b style="color:var(--vert)">v15 &middot; mobile v4 &middot; 10/10/2026</b></small></div>
     <div class="tb-sp"></div>
     <button class="btn sm" id="btnHome">🏠 Accueil</button>
     <button class="btn sm" id="btnRecap">📋 Récap</button>
@@ -3572,7 +3572,11 @@ function pdfReady(){
   };
 }
 window.epcExportPdf=exportPdf;
-if(COARSE&&byId("btnPrint")){ byId("btnPrint").onclick=exportPdf; byId("btnPrint").innerHTML="📄 Créer le PDF"; }
+/* (mobile v4, 10/10/2026) Le code d'origine recâble ce bouton sur l'impression du navigateur APRÈS ce module
+   (au démarrage, une fois la base de données ouverte) : un simple onclick était donc écrasé, et l'impression
+   ne fait rien dans l'appli posée sur l'écran d'accueil. On écoute le clic en amont et on bloque l'ancien geste. */
+if(COARSE&&byId("btnPrint")){ const bp=byId("btnPrint"); bp.innerHTML="📄 Créer le PDF";
+  bp.addEventListener("click",e=>{ e.preventDefault(); e.stopImmediatePropagation(); exportPdf(); },true); }
 
 /* ---------- 2 bis. NOUVELLE VERSION EN LIGNE ? ----------
    Une appli posée sur l'écran d'accueil garde l'ancienne page en mémoire. On compare le repère de version
